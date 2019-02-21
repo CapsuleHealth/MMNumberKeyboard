@@ -408,6 +408,11 @@ static const CGFloat MMNumberKeyboardPadSpacing = 8.0f;
 {
     id <UIKeyInput> keyInput = self.keyInput;
     
+    if ([keyInput isKindOfClass:[UITextField class]]) {
+        UITextField * textField = (UITextField *)firstResponder;
+        [textField sendActionsForControlEvents:UIControlEventEditingDidEndOnExit];
+    }
+    
     if ([keyInput isKindOfClass:[UIResponder class]]) {
         [(UIResponder *)keyInput resignFirstResponder];
     }
