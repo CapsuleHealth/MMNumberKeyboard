@@ -279,11 +279,11 @@ static const CGFloat MMNumberKeyboardPadSpacing = 8.0f;
     // Handle backspace.
     else if (keyboardButton == MMNumberKeyboardButtonBackspace) {
         BOOL shouldDeleteBackward = YES;
-		
+        
         if ([delegate respondsToSelector:@selector(numberKeyboardShouldDeleteBackward:)]) {
             shouldDeleteBackward = [delegate numberKeyboardShouldDeleteBackward:self];
         }
-		
+        
         if (shouldDeleteBackward) {
             [keyInput deleteBackward];
         }
@@ -298,6 +298,11 @@ static const CGFloat MMNumberKeyboardPadSpacing = 8.0f;
         }
         
         if (shouldReturn) {
+            id <UIKeyInput> keyInput = self.keyInput;
+            if ([keyInput isKindOfClass:[UITextField class]]) {
+                UITextField * textField = (UITextField *)keyInput;
+                [textField sendActionsForControlEvents:UIControlEventEditingDidEndOnExit];
+            }
             [self _dismissKeyboard:button];
         }
     }
@@ -407,11 +412,6 @@ static const CGFloat MMNumberKeyboardPadSpacing = 8.0f;
 - (void)_dismissKeyboard:(id)sender
 {
     id <UIKeyInput> keyInput = self.keyInput;
-    
-    if ([keyInput isKindOfClass:[UITextField class]]) {
-        UITextField * textField = (UITextField *)keyInput;
-        [textField sendActionsForControlEvents:UIControlEventEditingDidEndOnExit];
-    }
     
     if ([keyInput isKindOfClass:[UIResponder class]]) {
         [(UIResponder *)keyInput resignFirstResponder];
@@ -774,14 +774,14 @@ NS_INLINE CGRect MMButtonRectMake(CGRect rect, CGRect contentRect, BOOL usesRoun
     if (!resource.length) {
         return nil;
     }
-
+    
     NSBundle *bundle = [NSBundle bundleForClass:[self class]];
     NSString *resourcePath = [bundle pathForResource:resource ofType:extension];
-
+    
     if (resourcePath.length) {
         return [UIImage imageWithContentsOfFile:resourcePath];
     }
-
+    
     return [UIImage imageNamed:resource];
 }
 
